@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MoneySmart Campus | Finance Challenge</title>
+<style>
+:root {
+  --navy:#142B4A; --teal:#087F75; --mint:#E4F6F1;
+  --paper:#F5F8FC; --ink:#25344A; --muted:#65758B;
+  --line:#E0E7EF; --white:#FFFFFF; --gold:#F5C451;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:Arial,Helvetica,sans-serif; line-height:1.6;
+}
+button,input { font:inherit; }
+button { cursor:pointer; }
+header {
+  background:var(--navy); color:white; padding:18px 6%;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:14px; flex-wrap:wrap;
+}
+.brand { font-weight:800; font-size:1.25rem; }
+.brand span { color:#70E0C3; }
+header a { color:white; text-decoration:none; margin-left:16px; }
+main { max-width:1100px; margin:auto; padding:26px 18px 60px; }
+.hero {
+  background:linear-gradient(125deg,#142B4A,#176C70);
+  color:white; padding:36px; border-radius:22px; margin-bottom:24px;
+}
+.eyebrow { text-transform:uppercase; letter-spacing:1.5px;
+  font-size:.75rem; font-weight:800; color:#70E0C3; }
+h1 { font-size:clamp(2rem,5vw,3.3rem); line-height:1.1; margin:12px 0; }
+h2 { line-height:1.25; }
+.hero p { max-width:650px; color:#E2F1F5; }
+button.primary {
+  background:var(--teal); color:white; border:0; border-radius:10px;
+  padding:12px 18px; font-weight:700;
+}
+.hero button { background:#70E0C3; color:#142B4A; }
+button.secondary {
+  background:white; color:var(--navy); border:1px solid var(--line);
+  border-radius:10px; padding:11px 16px; font-weight:700;
+}
+button:focus-visible,input:focus-visible,a:focus-visible {
+  outline:3px solid #F5C451; outline-offset:3px;
+}
+.stats { display:grid; grid-template-columns:repeat(3,1fr);
+  gap:12px; margin:20px 0 30px; }
+.stat,.panel,.lesson-card {
+  background:white; border:1px solid var(--line); border-radius:16px;
+  padding:18px;
+}
+.stat strong { display:block; font-size:1.55rem; color:var(--navy); }
+.stat span,.muted { color:var(--muted); font-size:.9rem; }
+.layout { display:grid; grid-template-columns:280px minmax(0,1fr);
+  gap:22px; align-items:start; }
+.sidebar { position:sticky; top:12px; }
+.progress-track { height:9px; background:#E7EDF4; border-radius:20px;
+  overflow:hidden; margin:10px 0 18px; }
+.progress-fill { height:100%; width:0%; background:#13A58D; transition:width .3s; }
+.lesson-list { display:grid; gap:8px; }
+.lesson-link {
+  display:flex; gap:10px; align-items:center; text-align:left;
+  width:100%; border:1px solid transparent; border-radius:10px;
+  padding:10px; background:#F6F8FB; color:var(--ink);
+}
+.lesson-link.active { background:var(--mint); border-color:#9ADBCB; }
+.lesson-link .number {
+  width:30px; height:30px; flex-shrink:0; border-radius:9px;
+  display:grid; place-items:center; background:white; font-weight:800;
+}
+.lesson-link small { display:block; color:var(--muted); }
+.content { min-width:0; }
+.panel { padding:26px; margin-bottom:18px; }
+.tag { display:inline-block; border-radius:30px; background:var(--mint);
+  color:#08695F; padding:5px 10px; font-size:.8rem; font-weight:700; }
+.lesson-title { font-size:clamp(1.6rem,4vw,2.2rem); margin:12px 0; }
+.callout { background:#F0F6FC; border-left:4px solid #4A8CCB;
+  padding:14px; border-radius:7px; margin:16px 0; }
+.scenario { background:#FFF8E7; border-left:4px solid var(--gold);
+  padding:15px; border-radius:7px; margin:18px 0; }
+.quiz-option {
+  display:block; width:100%; text-align:left; background:white;
+  color:var(--ink); border:1px solid var(--line); border-radius:10px;
+  padding:13px 14px; margin:9px 0;
+}
+.quiz-option:hover:not(:disabled) { border-color:var(--teal); background:#F0FAF7; }
+.quiz-option:disabled { cursor:default; opacity:1; }
+.quiz-option.correct { border-color:#14865C; background:#E6F7EE; }
+.quiz-option.wrong { border-color:#CF4B4B; background:#FFF0F0; }
+.feedback { margin:12px 0; padding:13px; border-radius:9px; }
+.feedback.good { background:#E6F7EE; color:#12633F; }
+.feedback.bad { background:#FFF0F0; color:#923333; }
+.actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:20px; }
+.budget-row { display:grid; grid-template-columns:1fr 130px;
+  gap:12px; align-items:center; margin:15px 0; }
+.budget-row label { font-weight:700; }
+.budget-row input { width:100%; padding:10px; border:1px solid var(--line);
+  border-radius:8px; }
+.budget-total { font-size:1.25rem; font-weight:800; }
+.notice { font-size:.88rem; color:var(--muted); }
+footer { text-align:center; color:var(--muted); padding:24px; font-size:.85rem; }
+.hidden { display:none !important; }
+@media(max-width:760px) {
+  .layout { grid-template-columns:1fr; }
+  .sidebar { position:static; }
+  .lesson-list { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .stats { grid-template-columns:1fr; }
+  .hero { padding:25px; }
+  .panel { padding:19px; }
+  header a { margin-left:8px; }
+}
+@media(max-width:430px) {
+  .lesson-list { grid-template-columns:1fr; }
+  .budget-row { grid-template-columns:1fr 105px; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">💸 MoneySmart <span>Campus</span></div>
+  <nav aria-label="Main navigation">
+    <a href="#lessons">Lessons</a>
+    <a href="#budget">Budget Lab</a>
+  </nav>
+</header>
+
+<main>
+<section class="hero">
+  <div class="eyebrow">Your money. Your future.</div>
+  <h1>Make your money<br>work for you.</h1>
+  <p>Ten bite-sized challenges to help you budget smarter, save more,
+  understand credit, and make confident financial decisions in college.</p>
+  <button class="primary" onclick="startLearning()">Start Learning →</button>
+</section>
+
+<section class="stats" aria-label="Your learning statistics">
+  <div class="stat"><strong id="completedCount">0/10</strong><span>Lessons completed</span></div>
+  <div class="stat"><strong id="scoreCount">0</strong><span>Total quiz points</span></div>
+  <div class="stat"><strong id="percentCount">0%</strong><span>Learning progress</span></div>
+</section>
+
+<section class="layout" id="lessons">
+  <aside class="sidebar panel">
+    <h2>Learning path</h2>
+    <p class="muted">Complete each challenge to build your money skills.</p>
+    <div class="progress-track" role="progressbar" aria-label="Lesson completion"
+      aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progressBar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="lesson-list" id="lessonList"></div>
+  </aside>
+
+  <div class="content">
+    <section class="panel" id="lessonPanel" aria-live="polite"></section>
+    <section class="panel" id="quizPanel">
+      <span class="tag">Knowledge check</span>
+      <h2>Ready for your quiz?</h2>
+      <p>Read the lesson and scenario above, then test what you learned.</p>
+      <button class="primary" onclick="showQuiz()">Start quiz →</button>
+    </section>
+  </div>
+</section>
+
+<section class="panel" id="budget">
+  <span class="tag">Interactive simulator</span>
+  <h2>Budget Lab: Your $1,000 Month</h2>
+  <p>Imagine you have $1,000 available for the month. Adjust your spending
+  plan and see whether your budget balances. These are fictional amounts.</p>
+  <div id="budgetInputs"></div>
+  <div class="budget-total">Allocated: $<span id="budgetTotal">1000</span> / $1,000</div>
+  <div class="progress-track"><div class="progress-fill" id="budgetFill"></div></div>
+  <p id="budgetFeedback" class="feedback good" aria-live="polite">
+    Your budget is balanced. Nice work!
+  </p>
+  <button class="secondary" onclick="resetBudget()">Reset budget</button>
+  <p class="notice">Tip: prioritize essentials, leave room for savings, and
+  adjust optional spending when necessary.</p>
+</section>
+
+<section class="panel hidden" id="finalPanel" aria-live="polite">
+  <span class="tag">Challenge complete</span>
+  <h2>🎉 You finished MoneySmart Campus!</h2>
+  <p id="finalMessage"></p>
+  <button class="primary" onclick="restartCourse()">Play again</button>
+</section>
+</main>
+
+<footer>MoneySmart Campus · An educational project for college students.
+This website provides general education, not individualized financial advice.</footer>
+
+<script>
+const lessons = [
+{
+title:"Build Your First Budget", icon:"📊",
+objective:"A budget gives every dollar a purpose and helps you avoid spending more than you have.",
+body:"List your income first. Subtract essential expenses, plan for savings, and set a realistic limit for optional purchases. Review your budget regularly and adjust it when your circumstances change.",
+scenario:"You have $1,000 for the month. After planning your essentials, you have $100 left. You also want to save $50. What is the smartest approach?",
+options:["Spend all $100 on entertainment.","Set aside $50 for savings and limit entertainment to the remaining $50.","Use a credit card for the savings amount."],
+answer:1,explanation:"Saving $50 while keeping entertainment within the remaining $50 means your plan stays within the money available."
+},
+{
+title:"Needs vs. Wants",icon:"🛒",
+objective:"Needs support basic living, safety, health, and education. Wants are optional purchases that make life more enjoyable.",
+body:"Rent, groceries, essential transportation, and required course materials are common needs. Premium subscriptions, impulse purchases, and luxury upgrades are usually wants. Some purchases depend on your circumstances.",
+scenario:"Your laptop is essential for coursework and needs a repair. At the same time, new headphones are on sale. Your budget is tight. What should you do?",
+options:["Buy the headphones before the sale ends.","Repair the essential laptop first and delay the headphones.","Put both purchases on a credit card without checking your budget."],
+answer:1,explanation:"Protect essential education needs first. A sale does not automatically make an optional purchase affordable."
+},
+{
+title:"Saving Money",icon:"🐷",
+objective:"Consistent small contributions can help you reach goals and prepare for unexpected expenses.",
+body:"Give savings a place in your budget. Set a specific goal, choose a realistic schedule, and consider an automatic transfer if it works for you. A separate savings account may help you avoid spending the money accidentally.",
+scenario:"You want to save $300 in three months. How much should you set aside each month if you contribute equally?",
+options:["$50 per month.","$75 per month.","$100 per month."],
+answer:2,explanation:"$300 divided by three months is $100 per month. Choose a goal that fits your actual budget."
+},
+{
+title:"Credit Cards",icon:"💳",
+objective:"A credit card is borrowed money. Paying the full statement balance by the due date generally helps avoid interest on purchases when the account terms provide a grace period.",
+body:"Understand the interest rate, fees, payment due date, and minimum payment. Paying only the minimum can leave a balance that accumulates interest. Cash advances and other transactions may have different terms.",
+scenario:"You carry an unpaid $400 credit-card balance into the next billing cycle. What may happen?",
+options:["Interest may be charged, increasing what you owe.","Your balance automatically disappears.","Your credit limit becomes free money."],
+answer:0,explanation:"Interest can increase your debt. The amount depends on your APR, balance, payment timing, and card terms."
+},
+{
+title:"Credit Scores",icon:"📈",
+objective:"Credit scores help lenders assess credit risk, and different scoring models may produce different scores.",
+body:"Paying bills on time and managing balances responsibly can help your credit profile. Credit utilization is the amount of revolving credit you use relative to your available limits. Avoid applying for credit impulsively.",
+scenario:"Your card has a $1,000 limit and a $900 balance. What is your credit utilization on this card?",
+options:["9%.","90%.","100%."],
+answer:1,explanation:"$900 divided by $1,000 is 90%. High utilization can negatively affect many credit scores."
+},
+{
+title:"Student Loans",icon:"🎓",
+objective:"Borrow only what you reasonably need and understand how repayment works before accepting a loan.",
+body:"Compare interest rates, fees, fixed versus variable rates, repayment timelines, deferment terms, and forgiveness eligibility. Federal and private student loans can have very different protections and conditions.",
+scenario:"Two loans offer different interest rates and repayment terms. What should you do before choosing?",
+options:["Choose whichever advertises the largest loan amount.","Compare the total cost, terms, and repayment options.","Choose the one with the shortest application form."],
+answer:1,explanation:"A careful comparison helps you understand affordability and the total amount you may repay."
+},
+{
+title:"Avoid Financial Scams",icon:"🛡️",
+objective:"Scammers use urgency, impersonation, unrealistic promises, and requests for money or sensitive information.",
+body:"Verify job offers independently. Be wary of upfront fees, unexpected payment requests, fake checks, gift-card demands, and messages pressuring you to act immediately. Do not share passwords or verification codes.",
+scenario:"A recruiter promises you a remote job but asks you to pay an upfront processing fee through a payment app. What is the safest response?",
+options:["Pay immediately to secure the job.","Send your bank login to prove your identity.","Pause, verify the employer independently, and do not pay the suspicious fee."],
+answer:2,explanation:"Upfront payment demands are a warning sign. Verify the employer using contact details found independently."
+},
+{
+title:"Emergency Funds",icon:"☂️",
+objective:"An emergency fund provides a financial cushion for necessary, unexpected costs.",
+body:"Start with an amount you can manage and build gradually. Keep emergency savings accessible and separate from everyday spending. Your target depends on your expenses, income stability, and personal circumstances.",
+scenario:"Your car suddenly needs a $250 repair, and the car is necessary for getting to work. Which habit would help most?",
+options:["Keep accessible emergency savings for unexpected essential expenses.","Spend every dollar as soon as you receive it.","Ignore the repair until late fees appear."],
+answer:0,explanation:"Accessible savings can help cover emergencies without immediately relying on high-cost debt."
+},
+{
+title:"Compare Prices",icon:"🏷️",
+objective:"The lowest sticker price is not always the best value. Compare quantities, unit prices, quality, and the total cost.",
+body:"Calculate unit price by dividing the item's price by its quantity. Check shipping, subscription charges, fees, and whether you actually need the product before buying.",
+scenario:"One cereal box costs $4 for 20 ounces. Another costs $3 for 12 ounces. Which has the lower price per ounce?",
+options:["The 20-ounce box at $4.","The 12-ounce box at $3.","They cost the same per ounce."],
+answer:0,explanation:"$4 ÷ 20 = $0.20 per ounce. $3 ÷ 12 = $0.25 per ounce, so the larger box is cheaper per ounce."
+},
+{
+title:"Make Smart Spending Decisions",icon:"🎯",
+objective:"Good financial decisions balance current needs, enjoyment, savings, and future commitments.",
+body:"Pause before impulse purchases. Check upcoming bills and financial goals, compare alternatives, and consider waiting before nonessential purchases. A spending plan should be realistic enough to follow.",
+scenario:"You have money left in your account, but tuition is due next week. You are considering buying a new gaming accessory. What is the best choice?",
+options:["Buy it because the money is currently available.","Set aside the money needed for tuition before considering optional spending.","Ignore the tuition deadline and hope for more income."],
+answer:1,explanation:"Upcoming essential commitments should be covered before spending on wants. You can revisit optional purchases after checking your remaining budget."
+}
+];
+
+let current=0;
+let answers=Array(lessons.length).fill(null);
+let completed=new Set();
+let quizVisible=false;
+
+function startLearning(){
+  document.getElementById("lessons").scrollIntoView({behavior:"smooth"});
+  renderLesson(0);
+}
+function renderList(){
+  document.getElementById("lessonList").innerHTML=lessons.map((l,i)=>`
+    <button class="lesson-link ${i===current?"active":""}" onclick="renderLesson(${i})">
+      <span class="number">${completed.has(i)?"✓":i+1}</span>
+      <span>${l.icon} ${l.title}<small>${completed.has(i)?"Completed":"Lesson "+(i+1)}</small></span>
+    </button>`).join("");
+  document.getElementById("completedCount").textContent=completed.size+"/10";
+  document.getElementById("scoreCount").textContent=answers.filter((a,i)=>a===lessons[i].answer).length;
+  document.getElementById("percentCount").textContent=Math.round(completed.size/10*100)+"%";
+  document.getElementById("progressFill").style.width=completed.size*10+"%";
+  document.getElementById("progressBar").setAttribute("aria-valuenow",completed.size*10);
+}
+function renderLesson(i){
+  current=i; quizVisible=false;
+  const l=lessons[i];
+  document.getElementById("lessonPanel").innerHTML=`
+    <span class="tag">Lesson ${i+1} of ${lessons.length}</span>
+    <h2 class="lesson-title">${l.icon} ${l.title}</h2>
+    <h3>What you'll learn</h3><p>${l.objective}</p>
+    <div class="callout"><strong>Money tip</strong><br>${l.body}</div>
+    <div class="scenario"><strong>🎮 Your scenario</strong><br>${l.scenario}</div>
+    <p class="muted">Take the quiz below to check your understanding.</p>
+    <div class="actions">
+      <button class="secondary" onclick="renderLesson(${Math.max(0,i-1)})" ${i===0?"disabled":""}>← Previous</button>
+      <button class="primary" onclick="showQuiz()">Take the quiz →</button>
+    </div>`;
+  renderQuiz(); renderList();
+}
+function showQuiz(){
+  quizVisible=true;
+  document.getElementById("quizPanel").scrollIntoView({behavior:"smooth",block:"nearest"});
+  renderQuiz();
+}
+function renderQuiz(){
+  const l=lessons[current], chosen=answers[current];
+  let options=l.options.map((opt,i)=>{
+    let cls="";
+    if(chosen!==null && i===l.answer)cls="correct";
+    else if(chosen===i && chosen!==l.answer)cls="wrong";
+    return `<button class="quiz-option ${cls}" ${chosen!==null?"disabled":""} onclick="chooseAnswer(${i})">
+      ${String.fromCharCode(65+i)}. ${opt} ${chosen!==null&&i===l.answer?"✓":""}</button>`;
+  }).join("");
+  let feedback=chosen===null?"":`<div class="feedback ${chosen===l.answer?"good":"bad"}" role="status">
+    <strong>${chosen===l.answer?"Correct! 🎉":"Not quite yet."}</strong><br>${l.explanation}</div>`;
+  let next=current<9?`<button class="primary" onclick="renderLesson(${current+1})">Next lesson →</button>`:
+    `<button class="primary" onclick="showFinal()">See results →</button>`;
+  document.getElementById("quizPanel").innerHTML=`
+    <span class="tag">Question ${current+1} of 10</span>
+    <h2>💡 ${l.title}: Quick Quiz</h2>
+    <p>${l.scenario}</p><div>${options}</div>${feedback}
+    ${chosen===null?'<p class="notice">Choose the best answer to receive feedback.</p>':
+    `<div class="actions">${next}<button class="secondary" onclick="retakeCurrent()">Try again</button></div>`}`;
+}
+function chooseAnswer(i){
+  if(answers[current]!==null)return;
+  answers[current]=i;
+  if(i===lessons[current].answer)completed.add(current);
+  renderQuiz();renderList();
+  if(completed.size===10)document.getElementById("finalPanel").classList.remove("hidden");
+}
+function retakeCurrent(){
+  answers[current]=null;completed.delete(current);
+  renderList();renderQuiz();
+}
+function showFinal(){
+  const score=answers.filter((a,i)=>a===lessons[i].answer).length;
+  document.getElementById("finalMessage").textContent=
+    `You answered ${score} out of 10 quizzes correctly. `+
+    (score===10?"Perfect score! You're a MoneySmart Champion!":
+     score>=7?"Great work! Review any missed lessons to strengthen your skills.":
+     "Keep practicing! Revisit the lessons and try the quizzes again.");
+  document.getElementById("finalPanel").classList.remove("hidden");
+  document.getElementById("finalPanel").scrollIntoView({behavior:"smooth"});
+}
+function restartCourse(){
+  answers=Array(lessons.length).fill(null);completed.clear();
+  document.getElementById("finalPanel").classList.add("hidden");
+  renderLesson(0);
+}
+const categories=[
+  ["Housing",350],["Food",200],["Transportation",100],
+  ["Phone & bills",60],["Savings",150],["Entertainment",90],["Other",50]
+];
+function buildBudget(){
+  document.getElementById("budgetInputs").innerHTML=categories.map((c,i)=>`
+    <div class="budget-row">
+      <label for="b${i}">${c[0]}</label>
+      <input id="b${i}" type="number" min="0" max="1000" step="10" value="${c[1]}"
+       aria-label="${c[0]} budget in dollars" oninput="updateBudget()">
+    </div>`).join("");
+  updateBudget();
+}
+function updateBudget(){
+  let values=categories.map((c,i)=>Math.max(0,Number(document.getElementById("b"+i).value)||0));
+  let total=values.reduce((a,b)=>a+b,0), remaining=1000-total;
+  document.getElementById("budgetTotal").textContent=total.toLocaleString("en-US");
+  document.getElementById("budgetFill").style.width=Math.min(100,total/1000*100)+"%";
+  let box=document.getElementById("budgetFeedback");
+  if(total===1000){
+    box.className="feedback good";
+    box.textContent="Balanced! Every dollar has a job. Check that your priorities make sense.";
+  }else if(total<1000){
+    box.className="feedback good";
+    box.textContent=`You have $${remaining.toLocaleString("en-US")} unallocated. Consider adding it to savings or another goal.`;
+  }else{
+    box.className="feedback bad";
+    box.textContent=`You're over budget by $${Math.abs(remaining).toLocaleString("en-US")}. Reduce some categories to stay within $1,000.`;
+  }
+}
+function resetBudget(){
+  categories.forEach((c,i)=>document.getElementById("b"+i).value=c[1]);
+  updateBudget();
+}
+renderList();renderLesson(0);buildBudget();
+</script>
+</body>
+</html>
